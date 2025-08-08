@@ -30,5 +30,46 @@
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
     <script type="module" src="iframe-app.js"></script>
+    <script>
+    (function() {
+        const postHeight = () => {
+            const height = Math.max(
+                document.body.scrollHeight,
+                document.body.offsetHeight,
+                document.documentElement.clientHeight,
+                document.documentElement.scrollHeight,
+                document.documentElement.offsetHeight
+            );
+            
+            // Post to parent (WordPress iframe)
+            if (window.parent !== window) {
+                window.parent.postMessage({
+                    type: 'sea-ai-people:height',
+                    height: height
+                }, '*');
+            }
+            
+            // Post to Flutter WebView
+            if (window.flutter_inappwebview) {
+                window.flutter_inappwebview.callHandler('updateHeight', height);
+            }
+        };
+
+        // Multiple triggers for height updates
+        document.addEventListener('DOMContentLoaded', postHeight);
+        window.addEventListener('load', postHeight);
+        window.addEventListener('resize', postHeight);
+        
+        // Delayed updates for async content
+        setTimeout(postHeight, 500);
+        setTimeout(postHeight, 1500);
+        
+        // Watch for content changes
+        if (window.ResizeObserver) {
+            const ro = new ResizeObserver(postHeight);
+            ro.observe(document.body);
+        }
+    })();
+    </script>
 </body>
 </html>
