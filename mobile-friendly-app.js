@@ -1,4 +1,4 @@
-// people-list.js - Main application module
+// mobile-friendly-app.js - Sanitizer-safe version
 
 // Data and state
 let peopleData = [];
@@ -20,16 +20,6 @@ function debounce(func, wait) {
     };
 }
 
-// Country code to flag mapping
-const countryFlags = {
-    'VN': 'assets/flags/vn_flag.svg',
-    'SG': 'assets/flags/sg_flag.svg',
-    'ID': 'assets/flags/id_flag.svg',
-    'TH': 'assets/flags/th_flag.svg',
-    'MY': 'assets/flags/my_flag.svg',
-    'PH': 'assets/flags/ph_flag.svg'
-};
-
 // Flag assets mapping by country name
 const FLAG_ASSETS = {
     Vietnam: 'assets/flags/vn_flag.svg',
@@ -44,9 +34,64 @@ function getFlagFor(country) {
     return FLAG_ASSETS[country] ?? null;
 }
 
-// Main CSS styles injection
+// Load external CSS dynamically (sanitizer-safe)
+function loadChoicesCSS() {
+    return new Promise((resolve, reject) => {
+        fetch('https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css')
+            .then(response => response.text())
+            .then(css => {
+                const styleElement = document.createElement('style');
+                styleElement.textContent = css;
+                document.head.appendChild(styleElement);
+                resolve();
+            })
+            .catch(reject);
+    });
+}
+
+// Load Google Font dynamically
+function loadGoogleFont() {
+    const fontCSS = `
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500;600;700&display=swap');
+    `;
+    const styleElement = document.createElement('style');
+    styleElement.textContent = fontCSS;
+    document.head.appendChild(styleElement);
+}
+
+// Main CSS styles injection - sanitizer safe
 function injectStyles() {
     const cssText = `
+        :root {
+            --main-font: 'Lato', sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--main-font), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: transparent;
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            font-size: 18px;
+            color: #666;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+
         .app-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -81,7 +126,7 @@ function injectStyles() {
             padding: 12px 16px;
             border: 2px solid #e1e5e9;
             border-radius: 6px;
-            font-family: var(--main-font);
+            font-family: var(--main-font), sans-serif;
             font-size: 16px;
             transition: border-color 0.2s;
             background: transparent !important;
@@ -228,7 +273,7 @@ function injectStyles() {
             padding: 8px 16px;
             border-radius: 6px;
             cursor: pointer;
-            font-family: var(--main-font);
+            font-family: var(--main-font), sans-serif;
             font-size: 14px;
             font-weight: 500;
             transition: background-color 0.2s;
@@ -297,7 +342,7 @@ function injectStyles() {
             border-radius: 6px;
             min-height: 44px;
             padding: 6px 12px;
-            font-family: var(--main-font);
+            font-family: var(--main-font), sans-serif;
             font-size: 16px;
         }
 
@@ -317,7 +362,7 @@ function injectStyles() {
         }
 
         .choices__item--choice {
-            font-family: var(--main-font);
+            font-family: var(--main-font), sans-serif;
         }
 
         .no-results-state {
@@ -338,7 +383,7 @@ function injectStyles() {
             padding: 12px 24px;
             border-radius: 6px;
             cursor: pointer;
-            font-family: var(--main-font);
+            font-family: var(--main-font), sans-serif;
             font-size: 16px;
             font-weight: 500;
             transition: background-color 0.2s;
@@ -346,6 +391,30 @@ function injectStyles() {
 
         .clear-filters-btn:hover {
             background: #0056b3;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 767px) {
+            .app-container {
+                padding: 10px;
+            }
+            
+            .person-card {
+                padding: 15px;
+            }
+            
+            .card-header {
+                gap: 12px;
+            }
+            
+            .person-image {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .person-name {
+                font-size: 16px;
+            }
         }
     `;
 
@@ -638,7 +707,13 @@ function clearAllFilters() {
 // Initialize the application
 async function init() {
     try {
-        // Inject styles
+        // Load Google Font
+        loadGoogleFont();
+        
+        // Load Choices.js CSS
+        await loadChoicesCSS();
+        
+        // Inject our styles
         injectStyles();
 
         // Load data

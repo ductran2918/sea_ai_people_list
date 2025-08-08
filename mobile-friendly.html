@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SEA AI People List - Mobile Friendly</title>
+</head>
+<body>
+    <div id="loading">Loading people data...</div>
+    <div id="app" class="hidden">
+        <div id="filters-container"></div>
+        <div id="people-container"></div>
+        <div id="no-results" class="hidden">
+            <div data-style="text-align-center padding-40">
+                <h3>No results found</h3>
+                <button id="clear-filters-btn" data-style="margin-top-16 padding-8-16 bg-blue color-white border-none border-radius-4 cursor-pointer">Clear filters</button>
+            </div>
+        </div>
+        <footer class="map-footer">
+            <div class="source-attribution">
+                Data source: <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTRiNh4w92XdVXeRlBtrlSk9LcgFhLMNz97Ry0h34gfElPeZ4ZH-Kx_7CkjnYJfDmADti7sKO7cLExX/pub?gid=928970532&single=true&output=csv" target="_blank" rel="noopener">Google Sheets</a>
+            </div>
+            <div data-style="text-align-center padding-10 color-666 font-size-12">
+                © 2025 SEA AI People Directory
+            </div>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+    <script type="module" src="mobile-friendly-app.js"></script>
+</body>
+</html>
