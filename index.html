@@ -64,5 +64,39 @@
     
     <!-- Main Application -->
     <script type="module" src="people-list.js"></script>
+    <script>
+        (function () {
+        const postHeight = () => {
+            const b = document.body;
+            const d = document.documentElement;
+            const height = Math.max(
+            b.scrollHeight, b.offsetHeight,
+            d.clientHeight, d.scrollHeight, d.offsetHeight
+            );
+            // If you know the parent origin, replace "*" with it for security, e.g. "https://your-parent-domain.com"
+            parent.postMessage({ type: 'sea-ai-people:height', height }, '*');
+        };
+
+        // Initial and delayed updates (handles async content, fonts, images)
+        document.addEventListener('DOMContentLoaded', () => {
+            postHeight();
+            setTimeout(postHeight, 200);
+            setTimeout(postHeight, 800);
+        });
+        window.addEventListener('load', postHeight);
+        window.addEventListener('resize', postHeight);
+
+        // Watch for DOM size changes
+        if (window.ResizeObserver) {
+            const ro = new ResizeObserver(postHeight);
+            ro.observe(document.body);
+        }
+
+        // When web fonts finish loading
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(postHeight).catch(() => {});
+        }
+        })();
+    </script>
 </body>
 </html>
