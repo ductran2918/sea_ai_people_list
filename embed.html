@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SEA AI People — Embed</title>
+
+  <!-- Choices CSS (your app already uses this) -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css" />
+
+  <style>
+    html, body { margin: 0; padding: 0; background: #fff; }
+    /* Keep images/SVGs responsive */
+    img, svg { max-width: 100%; height: auto; display: block; }
+
+    /* Try to keep the embed as compact as possible */
+    .page-header, header, footer, .map-footer { display: none !important; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 12px; }
+    .filters, .filter-box { margin: 8px 0 !important; }
+    .person-card { margin: 8px !important; }
+
+    /* If your app initially hides #app, ensure it's visible in this page */
+    #app.hidden { visibility: visible; opacity: 1; }
+
+    /* Optional on-page height readout (enabled with ?measure=1) */
+    #embed-measure {
+      position: fixed; right: 8px; bottom: 8px;
+      background: rgba(0,0,0,.7); color: #fff;
+      font: 12px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      padding: 6px 8px; border-radius: 6px; z-index: 999999;
+    }
+  </style>
+</head>
+<body>
+  <!-- Root element your app expects -->
+  <div id="app" class="hidden"></div>
+
+  <!-- External dependencies your index.html uses -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.3.2/papaparse.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+
+  <!-- Load your app -->
+  <script type="module">
+    import './people-list.js';
+
+    // Optional: measurement helper so you can copy the exact height into WordPress
+    const params = new URLSearchParams(location.search);
+    if (params.get('measure') === '1') {
+      const badge = document.createElement('div');
+      badge.id = 'embed-measure';
+      document.body.appendChild(badge);
+      const update = () => {
+        const b = document.body, d = document.documentElement;
+        const h = Math.max(b.scrollHeight, b.offsetHeight, d.clientHeight, d.scrollHeight, d.offsetHeight);
+        badge.textContent = `Total page height: ${h}px`;
+      };
+      if (window.ResizeObserver) {
+        const ro = new ResizeObserver(update);
+        ro.observe(document.body);
+      }
+      window.addEventListener('load', update);
+      setInterval(update, 500);
+    }
+  </script>
+</body>
+</html>
